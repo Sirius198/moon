@@ -107,6 +107,7 @@ import (
 	ibankmodule "moon/x/ibank"
 	ibankmodulekeeper "moon/x/ibank/keeper"
 	ibankmoduletypes "moon/x/ibank/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "moon/app/params"
@@ -509,6 +510,7 @@ func New(
 		app.GetSubspace(ibankmoduletypes.ModuleName),
 
 		app.AccountKeeper,
+		app.BankKeeper,
 	)
 	ibankModule := ibankmodule.NewAppModule(appCodec, app.IbankKeeper, app.AccountKeeper, app.BankKeeper)
 

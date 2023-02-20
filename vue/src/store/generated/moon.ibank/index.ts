@@ -128,7 +128,33 @@ export default {
 		},
 		
 		
+		async sendMsgSend({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.MoonIbank.tx.sendMsgSend({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSend:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgSend:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
+		async MsgSend({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.MoonIbank.tx.msgSend({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSend:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgSend:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		
 	}
 }

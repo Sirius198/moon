@@ -74307,6 +74307,8 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  moon.ibank.MsgSendResponse:
+    type: object
   moon.ibank.Params:
     type: object
     description: Params defines the parameters for the module.
