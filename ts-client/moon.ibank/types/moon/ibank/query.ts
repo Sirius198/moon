@@ -1,6 +1,9 @@
 /* eslint-disable */
+import Long from "long";
 import _m0 from "protobufjs/minimal";
+import { PageRequest, PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
 import { Params } from "./params";
+import { Transaction } from "./transaction";
 
 export const protobufPackage = "moon.ibank";
 
@@ -12,6 +15,23 @@ export interface QueryParamsRequest {
 export interface QueryParamsResponse {
   /** params holds all the parameters of this module. */
   params: Params | undefined;
+}
+
+export interface QueryGetTransactionRequest {
+  id: number;
+}
+
+export interface QueryGetTransactionResponse {
+  Transaction: Transaction | undefined;
+}
+
+export interface QueryAllTransactionRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryAllTransactionResponse {
+  Transaction: Transaction[];
+  pagination: PageResponse | undefined;
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -102,10 +122,228 @@ export const QueryParamsResponse = {
   },
 };
 
+function createBaseQueryGetTransactionRequest(): QueryGetTransactionRequest {
+  return { id: 0 };
+}
+
+export const QueryGetTransactionRequest = {
+  encode(message: QueryGetTransactionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetTransactionRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetTransactionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetTransactionRequest {
+    return { id: isSet(object.id) ? Number(object.id) : 0 };
+  },
+
+  toJSON(message: QueryGetTransactionRequest): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetTransactionRequest>, I>>(object: I): QueryGetTransactionRequest {
+    const message = createBaseQueryGetTransactionRequest();
+    message.id = object.id ?? 0;
+    return message;
+  },
+};
+
+function createBaseQueryGetTransactionResponse(): QueryGetTransactionResponse {
+  return { Transaction: undefined };
+}
+
+export const QueryGetTransactionResponse = {
+  encode(message: QueryGetTransactionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.Transaction !== undefined) {
+      Transaction.encode(message.Transaction, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetTransactionResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetTransactionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.Transaction = Transaction.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetTransactionResponse {
+    return { Transaction: isSet(object.Transaction) ? Transaction.fromJSON(object.Transaction) : undefined };
+  },
+
+  toJSON(message: QueryGetTransactionResponse): unknown {
+    const obj: any = {};
+    message.Transaction !== undefined
+      && (obj.Transaction = message.Transaction ? Transaction.toJSON(message.Transaction) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetTransactionResponse>, I>>(object: I): QueryGetTransactionResponse {
+    const message = createBaseQueryGetTransactionResponse();
+    message.Transaction = (object.Transaction !== undefined && object.Transaction !== null)
+      ? Transaction.fromPartial(object.Transaction)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryAllTransactionRequest(): QueryAllTransactionRequest {
+  return { pagination: undefined };
+}
+
+export const QueryAllTransactionRequest = {
+  encode(message: QueryAllTransactionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAllTransactionRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllTransactionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllTransactionRequest {
+    return { pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined };
+  },
+
+  toJSON(message: QueryAllTransactionRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryAllTransactionRequest>, I>>(object: I): QueryAllTransactionRequest {
+    const message = createBaseQueryAllTransactionRequest();
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryAllTransactionResponse(): QueryAllTransactionResponse {
+  return { Transaction: [], pagination: undefined };
+}
+
+export const QueryAllTransactionResponse = {
+  encode(message: QueryAllTransactionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.Transaction) {
+      Transaction.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAllTransactionResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAllTransactionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.Transaction.push(Transaction.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllTransactionResponse {
+    return {
+      Transaction: Array.isArray(object?.Transaction)
+        ? object.Transaction.map((e: any) => Transaction.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryAllTransactionResponse): unknown {
+    const obj: any = {};
+    if (message.Transaction) {
+      obj.Transaction = message.Transaction.map((e) => e ? Transaction.toJSON(e) : undefined);
+    } else {
+      obj.Transaction = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryAllTransactionResponse>, I>>(object: I): QueryAllTransactionResponse {
+    const message = createBaseQueryAllTransactionResponse();
+    message.Transaction = object.Transaction?.map((e) => Transaction.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a Transaction by id. */
+  Transaction(request: QueryGetTransactionRequest): Promise<QueryGetTransactionResponse>;
+  /** Queries a list of Transaction items. */
+  TransactionAll(request: QueryAllTransactionRequest): Promise<QueryAllTransactionResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -113,17 +351,50 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
+    this.Transaction = this.Transaction.bind(this);
+    this.TransactionAll = this.TransactionAll.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("moon.ibank.Query", "Params", data);
     return promise.then((data) => QueryParamsResponse.decode(new _m0.Reader(data)));
   }
+
+  Transaction(request: QueryGetTransactionRequest): Promise<QueryGetTransactionResponse> {
+    const data = QueryGetTransactionRequest.encode(request).finish();
+    const promise = this.rpc.request("moon.ibank.Query", "Transaction", data);
+    return promise.then((data) => QueryGetTransactionResponse.decode(new _m0.Reader(data)));
+  }
+
+  TransactionAll(request: QueryAllTransactionRequest): Promise<QueryAllTransactionResponse> {
+    const data = QueryAllTransactionRequest.encode(request).finish();
+    const promise = this.rpc.request("moon.ibank.Query", "TransactionAll", data);
+    return promise.then((data) => QueryAllTransactionResponse.decode(new _m0.Reader(data)));
+  }
 }
 
 interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -135,6 +406,18 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

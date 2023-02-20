@@ -10,6 +10,7 @@ option go_package = "moon/x/ibank/types";
 // Msg defines the Msg service.
 service Msg {
       rpc Send(MsgSend) returns (MsgSendResponse);
+  rpc Receive(MsgReceive) returns (MsgReceiveResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -20,6 +21,14 @@ message MsgSend {
 }
 
 message MsgSendResponse {
+}
+
+message MsgReceive {
+  string receiver = 1;
+  int64 transactionId = 2;
+}
+
+message MsgReceiveResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

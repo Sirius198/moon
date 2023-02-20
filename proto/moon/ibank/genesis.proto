@@ -3,6 +3,7 @@ package moon.ibank;
 
 import "gogoproto/gogo.proto";
 import "moon/ibank/params.proto";
+import "moon/ibank/transaction.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "moon/x/ibank/types";
@@ -10,5 +11,7 @@ option go_package = "moon/x/ibank/types";
 // GenesisState defines the ibank module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  repeated Transaction transactionList = 2 [(gogoproto.nullable) = false];
+  uint64 transactionCount = 3;
   // this line is used by starport scaffolding # genesis/proto/state
 }

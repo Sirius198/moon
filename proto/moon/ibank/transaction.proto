@@ -1,0 +1,25 @@
+syntax = "proto3";
+package moon.ibank;
+
+option go_package = "moon/x/ibank/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+import "google/protobuf/timestamp.proto";
+
+message Transaction {
+  uint64 id = 1;
+  string sender = 2; 
+  string receiver = 3; 
+  repeated cosmos.base.v1beta1.Coin coins = 4 [(gogoproto.nullable) = false]; 
+  google.protobuf.Timestamp sent_at = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+
+  // If sent_at is equal to received_at, transaction have not been performed
+  google.protobuf.Timestamp received_at = 6 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  
+}

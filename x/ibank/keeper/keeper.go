@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 
 	"moon/x/ibank/types"
@@ -8,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -53,10 +55,51 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
+func (k Keeper) CreateModuleAccount(ctx sdk.Context) {
+	moduleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName)
+	k.accountKeeper.SetModuleAccount(ctx, moduleAcc)
+}
+
 func (k Keeper) SendCoin(ctx sdk.Context, from, to sdk.AccAddress, amt sdk.Coin) error {
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, sdk.Coins{amt})
 	if err != nil {
 		return err
 	}
+
+	k.AppendTransaction(ctx, types.Transaction{
+		Sender:     from.String(),
+		Receiver:   to.String(),
+		Coins:      sdk.Coins{amt},
+		SentAt:     ctx.BlockTime(),
+		ReceivedAt: ctx.BlockTime(),
+	})
 	return nil
+}
+
+func (k Keeper) ReceiveCoin(ctx sdk.Context, receiver sdk.AccAddress, transactionId int64) error {
+	txn, found := k.GetTransaction(ctx, uint64(transactionId))
+	if !found {
+		return errors.New("transaction not found")
+	}
+
+	// Check if transaction is performed
+	if txn.ReceivedAt != txn.SentAt {
+		return errors.New("you already performed this transaction")
+	}
+
+	// Check if transaction is expired
+	duration := ctx.BlockTime().Sub(txn.SentAt)
+	if duration.Seconds() > 100 {
+		return errors.New("transaction has expired")
+	}
+
+	to, err := sdk.AccAddressFromBech32(txn.Receiver)
+	if err != nil || !to.Equals(receiver) {
+		return errors.New("receiver not found")
+	}
+
+	txn.ReceivedAt = ctx.BlockTime()
+	k.SetTransaction(ctx, txn)
+
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiver, txn.Coins)
 }

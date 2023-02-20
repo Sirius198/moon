@@ -7,10 +7,17 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgReceive } from "./types/moon/ibank/tx";
 import { MsgSend } from "./types/moon/ibank/tx";
 
 
-export { MsgSend };
+export { MsgReceive, MsgSend };
+
+type sendMsgReceiveParams = {
+  value: MsgReceive,
+  fee?: StdFee,
+  memo?: string
+};
 
 type sendMsgSendParams = {
   value: MsgSend,
@@ -18,6 +25,10 @@ type sendMsgSendParams = {
   memo?: string
 };
 
+
+type msgReceiveParams = {
+  value: MsgReceive,
+};
 
 type msgSendParams = {
   value: MsgSend,
@@ -41,6 +52,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgReceive({ value, fee, memo }: sendMsgReceiveParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgReceive: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgReceive({ value: MsgReceive.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgReceive: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		async sendMsgSend({ value, fee, memo }: sendMsgSendParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgSend: Unable to sign Tx. Signer is not present.')
@@ -55,6 +80,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		
+		msgReceive({ value }: msgReceiveParams): EncodeObject {
+			try {
+				return { typeUrl: "/moon.ibank.MsgReceive", value: MsgReceive.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgReceive: Could not create message: ' + e.message)
+			}
+		},
 		
 		msgSend({ value }: msgSendParams): EncodeObject {
 			try {
