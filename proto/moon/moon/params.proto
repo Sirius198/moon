@@ -1,0 +1,12 @@
+syntax = "proto3";
+package moon.moon;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "moon/x/moon/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
