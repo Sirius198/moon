@@ -1,8 +1,12 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import MoonIbank from './moon.ibank'
+import MoonMoon from './moon.moon'
 
 
 export default { 
+  MoonIbank: load(MoonIbank, 'moon.ibank'),
+  MoonMoon: load(MoonMoon, 'moon.moon'),
   
 }
 
