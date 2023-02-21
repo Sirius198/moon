@@ -56,10 +56,12 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 func (k Keeper) CreateModuleAccount(ctx sdk.Context) {
-	moduleAcc := authtypes.NewEmptyModuleAccount(types.ModuleName)
-	k.accountKeeper.SetModuleAccount(ctx, moduleAcc)
+	macc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter)
+	// maccI := (k.accountKeeper.NewAccount(ctx, macc)).(authtypes.ModuleAccountI)
+	k.accountKeeper.SetModuleAccount(ctx, macc)
 }
 
+// This function send amt Coin from `from` account to a module account
 func (k Keeper) SendCoin(ctx sdk.Context, from, to sdk.AccAddress, amt sdk.Coin) error {
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, sdk.Coins{amt})
 	if err != nil {
@@ -73,6 +75,7 @@ func (k Keeper) SendCoin(ctx sdk.Context, from, to sdk.AccAddress, amt sdk.Coin)
 		SentAt:     ctx.BlockTime(),
 		ReceivedAt: ctx.BlockTime(),
 	})
+
 	return nil
 }
 
@@ -88,8 +91,9 @@ func (k Keeper) ReceiveCoin(ctx sdk.Context, receiver sdk.AccAddress, transactio
 	}
 
 	// Check if transaction is expired
+	params := k.GetParams(ctx)
 	duration := ctx.BlockTime().Sub(txn.SentAt)
-	if duration.Seconds() > 100 {
+	if duration > params.DurationOfExpiration {
 		return errors.New("transaction has expired")
 	}
 

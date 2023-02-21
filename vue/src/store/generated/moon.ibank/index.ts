@@ -38,6 +38,8 @@ const getDefaultState = () => {
 				Params: {},
 				Transaction: {},
 				TransactionAll: {},
+				ShowIncoming: {},
+				ShowOutgoing: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
@@ -87,6 +89,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.TransactionAll[JSON.stringify(params)] ?? {}
+		},
+				getShowIncoming: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ShowIncoming[JSON.stringify(params)] ?? {}
+		},
+				getShowOutgoing: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ShowOutgoing[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -187,6 +201,50 @@ export default {
 				return getters['getTransactionAll']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryTransactionAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryShowIncoming({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.MoonIbank.query.queryShowIncoming( key.receiver,  key.pending)).data
+				
+					
+				commit('QUERY', { query: 'ShowIncoming', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShowIncoming', payload: { options: { all }, params: {...key},query }})
+				return getters['getShowIncoming']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryShowIncoming API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryShowOutgoing({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.MoonIbank.query.queryShowOutgoing( key.sender,  key.pending)).data
+				
+					
+				commit('QUERY', { query: 'ShowOutgoing', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShowOutgoing', payload: { options: { all }, params: {...key},query }})
+				return getters['getShowOutgoing']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryShowOutgoing API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

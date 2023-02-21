@@ -16,7 +16,9 @@ export type IbankMsgSendResponse = object;
 /**
  * Params defines the parameters for the module.
  */
-export type IbankParams = object;
+export interface IbankParams {
+  duration_of_expiration?: string;
+}
 
 export interface IbankQueryAllTransactionResponse {
   Transaction?: IbankTransaction[];
@@ -44,6 +46,10 @@ export interface IbankQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: IbankParams;
 }
+
+export type IbankQueryShowIncomingResponse = object;
+
+export type IbankQueryShowOutgoingResponse = object;
 
 export interface IbankTransaction {
   /** @format uint64 */
@@ -292,6 +298,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<IbankQueryParamsResponse, RpcStatus>({
       path: `/moon/ibank/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryShowIncoming
+   * @summary Queries a list of ShowIncoming items.
+   * @request GET:/moon/ibank/show_incoming/{receiver}/{pending}
+   */
+  queryShowIncoming = (receiver: string, pending: string, params: RequestParams = {}) =>
+    this.request<IbankQueryShowIncomingResponse, RpcStatus>({
+      path: `/moon/ibank/show_incoming/${receiver}/${pending}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryShowOutgoing
+   * @summary Queries a list of ShowOutgoing items.
+   * @request GET:/moon/ibank/show_outgoing/{sender}/{pending}
+   */
+  queryShowOutgoing = (sender: string, pending: string, params: RequestParams = {}) =>
+    this.request<IbankQueryShowOutgoingResponse, RpcStatus>({
+      path: `/moon/ibank/show_outgoing/${sender}/${pending}`,
       method: "GET",
       format: "json",
       ...params,

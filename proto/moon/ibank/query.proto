@@ -26,6 +26,16 @@ service Query {
 		option (google.api.http).get = "/moon/ibank/transaction";
 	}
 
+// Queries a list of ShowIncoming items.
+	rpc ShowIncoming(QueryShowIncomingRequest) returns (QueryShowIncomingResponse) {
+		option (google.api.http).get = "/moon/ibank/show_incoming/{receiver}/{pending}";
+	}
+
+// Queries a list of ShowOutgoing items.
+	rpc ShowOutgoing(QueryShowOutgoingRequest) returns (QueryShowOutgoingResponse) {
+		option (google.api.http).get = "/moon/ibank/show_outgoing/{sender}/{pending}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -53,6 +63,22 @@ message QueryAllTransactionRequest {
 message QueryAllTransactionResponse {
 	repeated Transaction Transaction = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryShowIncomingRequest {
+  string receiver = 1;
+  string pending = 2;
+}
+
+message QueryShowIncomingResponse {
+}
+
+message QueryShowOutgoingRequest {
+  string sender = 1;
+  string pending = 2;
+}
+
+message QueryShowOutgoingResponse {
 }
 
 // this line is used by starport scaffolding # 3

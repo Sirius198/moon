@@ -44695,6 +44695,9 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  duration_of_expiration:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -44716,6 +44719,82 @@ paths:
                     '@type':
                       type: string
                   additionalProperties: {}
+      tags:
+        - Query
+  /moon/ibank/show_incoming/{receiver}/{pending}:
+    get:
+      summary: Queries a list of ShowIncoming items.
+      operationId: MoonIbankShowIncoming
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: receiver
+          in: path
+          required: true
+          type: string
+        - name: pending
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /moon/ibank/show_outgoing/{sender}/{pending}:
+    get:
+      summary: Queries a list of ShowOutgoing items.
+      operationId: MoonIbankShowOutgoing
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: sender
+          in: path
+          required: true
+          type: string
+        - name: pending
+          in: path
+          required: true
+          type: string
       tags:
         - Query
   /moon/ibank/transaction:
@@ -74539,6 +74618,9 @@ definitions:
     type: object
   moon.ibank.Params:
     type: object
+    properties:
+      duration_of_expiration:
+        type: string
     description: Params defines the parameters for the module.
   moon.ibank.QueryAllTransactionResponse:
     type: object
@@ -74652,7 +74734,14 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          duration_of_expiration:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  moon.ibank.QueryShowIncomingResponse:
+    type: object
+  moon.ibank.QueryShowOutgoingResponse:
+    type: object
   moon.ibank.Transaction:
     type: object
     properties:

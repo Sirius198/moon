@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -14,7 +16,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // NewParams creates a new Params instance
 func NewParams() Params {
-	return Params{}
+	expiration, _ := time.ParseDuration("48h")
+	return Params{
+		DurationOfExpiration: expiration,
+	}
 }
 
 // DefaultParams returns a default set of parameters

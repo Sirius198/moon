@@ -34,6 +34,22 @@ export interface QueryAllTransactionResponse {
   pagination: PageResponse | undefined;
 }
 
+export interface QueryShowIncomingRequest {
+  receiver: string;
+  pending: string;
+}
+
+export interface QueryShowIncomingResponse {
+}
+
+export interface QueryShowOutgoingRequest {
+  sender: string;
+  pending: string;
+}
+
+export interface QueryShowOutgoingResponse {
+}
+
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
 }
@@ -336,6 +352,200 @@ export const QueryAllTransactionResponse = {
   },
 };
 
+function createBaseQueryShowIncomingRequest(): QueryShowIncomingRequest {
+  return { receiver: "", pending: "" };
+}
+
+export const QueryShowIncomingRequest = {
+  encode(message: QueryShowIncomingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.receiver !== "") {
+      writer.uint32(10).string(message.receiver);
+    }
+    if (message.pending !== "") {
+      writer.uint32(18).string(message.pending);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryShowIncomingRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryShowIncomingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.receiver = reader.string();
+          break;
+        case 2:
+          message.pending = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryShowIncomingRequest {
+    return {
+      receiver: isSet(object.receiver) ? String(object.receiver) : "",
+      pending: isSet(object.pending) ? String(object.pending) : "",
+    };
+  },
+
+  toJSON(message: QueryShowIncomingRequest): unknown {
+    const obj: any = {};
+    message.receiver !== undefined && (obj.receiver = message.receiver);
+    message.pending !== undefined && (obj.pending = message.pending);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryShowIncomingRequest>, I>>(object: I): QueryShowIncomingRequest {
+    const message = createBaseQueryShowIncomingRequest();
+    message.receiver = object.receiver ?? "";
+    message.pending = object.pending ?? "";
+    return message;
+  },
+};
+
+function createBaseQueryShowIncomingResponse(): QueryShowIncomingResponse {
+  return {};
+}
+
+export const QueryShowIncomingResponse = {
+  encode(_: QueryShowIncomingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryShowIncomingResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryShowIncomingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryShowIncomingResponse {
+    return {};
+  },
+
+  toJSON(_: QueryShowIncomingResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryShowIncomingResponse>, I>>(_: I): QueryShowIncomingResponse {
+    const message = createBaseQueryShowIncomingResponse();
+    return message;
+  },
+};
+
+function createBaseQueryShowOutgoingRequest(): QueryShowOutgoingRequest {
+  return { sender: "", pending: "" };
+}
+
+export const QueryShowOutgoingRequest = {
+  encode(message: QueryShowOutgoingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    if (message.pending !== "") {
+      writer.uint32(18).string(message.pending);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryShowOutgoingRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryShowOutgoingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.pending = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryShowOutgoingRequest {
+    return {
+      sender: isSet(object.sender) ? String(object.sender) : "",
+      pending: isSet(object.pending) ? String(object.pending) : "",
+    };
+  },
+
+  toJSON(message: QueryShowOutgoingRequest): unknown {
+    const obj: any = {};
+    message.sender !== undefined && (obj.sender = message.sender);
+    message.pending !== undefined && (obj.pending = message.pending);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryShowOutgoingRequest>, I>>(object: I): QueryShowOutgoingRequest {
+    const message = createBaseQueryShowOutgoingRequest();
+    message.sender = object.sender ?? "";
+    message.pending = object.pending ?? "";
+    return message;
+  },
+};
+
+function createBaseQueryShowOutgoingResponse(): QueryShowOutgoingResponse {
+  return {};
+}
+
+export const QueryShowOutgoingResponse = {
+  encode(_: QueryShowOutgoingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryShowOutgoingResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryShowOutgoingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryShowOutgoingResponse {
+    return {};
+  },
+
+  toJSON(_: QueryShowOutgoingResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryShowOutgoingResponse>, I>>(_: I): QueryShowOutgoingResponse {
+    const message = createBaseQueryShowOutgoingResponse();
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -344,6 +554,10 @@ export interface Query {
   Transaction(request: QueryGetTransactionRequest): Promise<QueryGetTransactionResponse>;
   /** Queries a list of Transaction items. */
   TransactionAll(request: QueryAllTransactionRequest): Promise<QueryAllTransactionResponse>;
+  /** Queries a list of ShowIncoming items. */
+  ShowIncoming(request: QueryShowIncomingRequest): Promise<QueryShowIncomingResponse>;
+  /** Queries a list of ShowOutgoing items. */
+  ShowOutgoing(request: QueryShowOutgoingRequest): Promise<QueryShowOutgoingResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -353,6 +567,8 @@ export class QueryClientImpl implements Query {
     this.Params = this.Params.bind(this);
     this.Transaction = this.Transaction.bind(this);
     this.TransactionAll = this.TransactionAll.bind(this);
+    this.ShowIncoming = this.ShowIncoming.bind(this);
+    this.ShowOutgoing = this.ShowOutgoing.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -370,6 +586,18 @@ export class QueryClientImpl implements Query {
     const data = QueryAllTransactionRequest.encode(request).finish();
     const promise = this.rpc.request("moon.ibank.Query", "TransactionAll", data);
     return promise.then((data) => QueryAllTransactionResponse.decode(new _m0.Reader(data)));
+  }
+
+  ShowIncoming(request: QueryShowIncomingRequest): Promise<QueryShowIncomingResponse> {
+    const data = QueryShowIncomingRequest.encode(request).finish();
+    const promise = this.rpc.request("moon.ibank.Query", "ShowIncoming", data);
+    return promise.then((data) => QueryShowIncomingResponse.decode(new _m0.Reader(data)));
+  }
+
+  ShowOutgoing(request: QueryShowOutgoingRequest): Promise<QueryShowOutgoingResponse> {
+    const data = QueryShowOutgoingRequest.encode(request).finish();
+    const promise = this.rpc.request("moon.ibank.Query", "ShowOutgoing", data);
+    return promise.then((data) => QueryShowOutgoingResponse.decode(new _m0.Reader(data)));
   }
 }
 
