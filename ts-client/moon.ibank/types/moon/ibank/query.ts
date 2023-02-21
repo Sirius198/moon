@@ -36,18 +36,24 @@ export interface QueryAllTransactionResponse {
 
 export interface QueryShowIncomingRequest {
   receiver: string;
-  pending: string;
+  pending: boolean;
+  pagination: PageRequest | undefined;
 }
 
 export interface QueryShowIncomingResponse {
+  Transaction: Transaction[];
+  pagination: PageResponse | undefined;
 }
 
 export interface QueryShowOutgoingRequest {
   sender: string;
-  pending: string;
+  pending: boolean;
+  pagination: PageRequest | undefined;
 }
 
 export interface QueryShowOutgoingResponse {
+  Transaction: Transaction[];
+  pagination: PageResponse | undefined;
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -353,7 +359,7 @@ export const QueryAllTransactionResponse = {
 };
 
 function createBaseQueryShowIncomingRequest(): QueryShowIncomingRequest {
-  return { receiver: "", pending: "" };
+  return { receiver: "", pending: false, pagination: undefined };
 }
 
 export const QueryShowIncomingRequest = {
@@ -361,8 +367,11 @@ export const QueryShowIncomingRequest = {
     if (message.receiver !== "") {
       writer.uint32(10).string(message.receiver);
     }
-    if (message.pending !== "") {
-      writer.uint32(18).string(message.pending);
+    if (message.pending === true) {
+      writer.uint32(16).bool(message.pending);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -378,7 +387,10 @@ export const QueryShowIncomingRequest = {
           message.receiver = reader.string();
           break;
         case 2:
-          message.pending = reader.string();
+          message.pending = reader.bool();
+          break;
+        case 3:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -391,7 +403,8 @@ export const QueryShowIncomingRequest = {
   fromJSON(object: any): QueryShowIncomingRequest {
     return {
       receiver: isSet(object.receiver) ? String(object.receiver) : "",
-      pending: isSet(object.pending) ? String(object.pending) : "",
+      pending: isSet(object.pending) ? Boolean(object.pending) : false,
+      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined,
     };
   },
 
@@ -399,23 +412,34 @@ export const QueryShowIncomingRequest = {
     const obj: any = {};
     message.receiver !== undefined && (obj.receiver = message.receiver);
     message.pending !== undefined && (obj.pending = message.pending);
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryShowIncomingRequest>, I>>(object: I): QueryShowIncomingRequest {
     const message = createBaseQueryShowIncomingRequest();
     message.receiver = object.receiver ?? "";
-    message.pending = object.pending ?? "";
+    message.pending = object.pending ?? false;
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
     return message;
   },
 };
 
 function createBaseQueryShowIncomingResponse(): QueryShowIncomingResponse {
-  return {};
+  return { Transaction: [], pagination: undefined };
 }
 
 export const QueryShowIncomingResponse = {
-  encode(_: QueryShowIncomingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: QueryShowIncomingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.Transaction) {
+      Transaction.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -426,6 +450,12 @@ export const QueryShowIncomingResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.Transaction.push(Transaction.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -434,23 +464,39 @@ export const QueryShowIncomingResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryShowIncomingResponse {
-    return {};
+  fromJSON(object: any): QueryShowIncomingResponse {
+    return {
+      Transaction: Array.isArray(object?.Transaction)
+        ? object.Transaction.map((e: any) => Transaction.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
   },
 
-  toJSON(_: QueryShowIncomingResponse): unknown {
+  toJSON(message: QueryShowIncomingResponse): unknown {
     const obj: any = {};
+    if (message.Transaction) {
+      obj.Transaction = message.Transaction.map((e) => e ? Transaction.toJSON(e) : undefined);
+    } else {
+      obj.Transaction = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryShowIncomingResponse>, I>>(_: I): QueryShowIncomingResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryShowIncomingResponse>, I>>(object: I): QueryShowIncomingResponse {
     const message = createBaseQueryShowIncomingResponse();
+    message.Transaction = object.Transaction?.map((e) => Transaction.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
     return message;
   },
 };
 
 function createBaseQueryShowOutgoingRequest(): QueryShowOutgoingRequest {
-  return { sender: "", pending: "" };
+  return { sender: "", pending: false, pagination: undefined };
 }
 
 export const QueryShowOutgoingRequest = {
@@ -458,8 +504,11 @@ export const QueryShowOutgoingRequest = {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
-    if (message.pending !== "") {
-      writer.uint32(18).string(message.pending);
+    if (message.pending === true) {
+      writer.uint32(16).bool(message.pending);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -475,7 +524,10 @@ export const QueryShowOutgoingRequest = {
           message.sender = reader.string();
           break;
         case 2:
-          message.pending = reader.string();
+          message.pending = reader.bool();
+          break;
+        case 3:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -488,7 +540,8 @@ export const QueryShowOutgoingRequest = {
   fromJSON(object: any): QueryShowOutgoingRequest {
     return {
       sender: isSet(object.sender) ? String(object.sender) : "",
-      pending: isSet(object.pending) ? String(object.pending) : "",
+      pending: isSet(object.pending) ? Boolean(object.pending) : false,
+      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined,
     };
   },
 
@@ -496,23 +549,34 @@ export const QueryShowOutgoingRequest = {
     const obj: any = {};
     message.sender !== undefined && (obj.sender = message.sender);
     message.pending !== undefined && (obj.pending = message.pending);
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryShowOutgoingRequest>, I>>(object: I): QueryShowOutgoingRequest {
     const message = createBaseQueryShowOutgoingRequest();
     message.sender = object.sender ?? "";
-    message.pending = object.pending ?? "";
+    message.pending = object.pending ?? false;
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
     return message;
   },
 };
 
 function createBaseQueryShowOutgoingResponse(): QueryShowOutgoingResponse {
-  return {};
+  return { Transaction: [], pagination: undefined };
 }
 
 export const QueryShowOutgoingResponse = {
-  encode(_: QueryShowOutgoingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: QueryShowOutgoingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.Transaction) {
+      Transaction.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -523,6 +587,12 @@ export const QueryShowOutgoingResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.Transaction.push(Transaction.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -531,17 +601,33 @@ export const QueryShowOutgoingResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryShowOutgoingResponse {
-    return {};
+  fromJSON(object: any): QueryShowOutgoingResponse {
+    return {
+      Transaction: Array.isArray(object?.Transaction)
+        ? object.Transaction.map((e: any) => Transaction.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
   },
 
-  toJSON(_: QueryShowOutgoingResponse): unknown {
+  toJSON(message: QueryShowOutgoingResponse): unknown {
     const obj: any = {};
+    if (message.Transaction) {
+      obj.Transaction = message.Transaction.map((e) => e ? Transaction.toJSON(e) : undefined);
+    } else {
+      obj.Transaction = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryShowOutgoingResponse>, I>>(_: I): QueryShowOutgoingResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryShowOutgoingResponse>, I>>(object: I): QueryShowOutgoingResponse {
     const message = createBaseQueryShowOutgoingResponse();
+    message.Transaction = object.Transaction?.map((e) => Transaction.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
     return message;
   },
 };

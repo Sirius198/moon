@@ -3,10 +3,12 @@ package cli
 import (
 	"strconv"
 
+	"moon/x/ibank/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	"moon/x/ibank/types"
 )
 
 var _ = strconv.Itoa(0)
@@ -18,7 +20,10 @@ func CmdShowIncoming() *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqReceiver := args[0]
-			reqPending := args[1]
+			reqPending, err := cast.ToBoolE(args[1])
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

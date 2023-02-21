@@ -47,9 +47,35 @@ export interface IbankQueryParamsResponse {
   params?: IbankParams;
 }
 
-export type IbankQueryShowIncomingResponse = object;
+export interface IbankQueryShowIncomingResponse {
+  Transaction?: IbankTransaction[];
 
-export type IbankQueryShowOutgoingResponse = object;
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface IbankQueryShowOutgoingResponse {
+  Transaction?: IbankTransaction[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
 
 export interface IbankTransaction {
   /** @format uint64 */
@@ -311,10 +337,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a list of ShowIncoming items.
    * @request GET:/moon/ibank/show_incoming/{receiver}/{pending}
    */
-  queryShowIncoming = (receiver: string, pending: string, params: RequestParams = {}) =>
+  queryShowIncoming = (
+    receiver: string,
+    pending: boolean,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
     this.request<IbankQueryShowIncomingResponse, RpcStatus>({
       path: `/moon/ibank/show_incoming/${receiver}/${pending}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -327,10 +365,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a list of ShowOutgoing items.
    * @request GET:/moon/ibank/show_outgoing/{sender}/{pending}
    */
-  queryShowOutgoing = (sender: string, pending: string, params: RequestParams = {}) =>
+  queryShowOutgoing = (
+    sender: string,
+    pending: boolean,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
     this.request<IbankQueryShowOutgoingResponse, RpcStatus>({
       path: `/moon/ibank/show_outgoing/${sender}/${pending}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

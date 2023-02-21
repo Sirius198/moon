@@ -67,18 +67,24 @@ message QueryAllTransactionResponse {
 
 message QueryShowIncomingRequest {
   string receiver = 1;
-  string pending = 2;
+  bool pending = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QueryShowIncomingResponse {
+	repeated Transaction Transaction = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryShowOutgoingRequest {
   string sender = 1;
-  string pending = 2;
+  bool pending = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QueryShowOutgoingResponse {
+	repeated Transaction Transaction = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

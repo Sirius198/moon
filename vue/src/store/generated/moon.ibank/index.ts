@@ -215,9 +215,13 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.MoonIbank.query.queryShowIncoming( key.receiver,  key.pending)).data
+				let value= (await client.MoonIbank.query.queryShowIncoming( key.receiver,  key.pending, query ?? undefined)).data
 				
 					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.MoonIbank.query.queryShowIncoming( key.receiver,  key.pending, {...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
 				commit('QUERY', { query: 'ShowIncoming', key: { params: {...key}, query}, value })
 				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShowIncoming', payload: { options: { all }, params: {...key},query }})
 				return getters['getShowIncoming']( { params: {...key}, query}) ?? {}
@@ -237,9 +241,13 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.MoonIbank.query.queryShowOutgoing( key.sender,  key.pending)).data
+				let value= (await client.MoonIbank.query.queryShowOutgoing( key.sender,  key.pending, query ?? undefined)).data
 				
 					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.MoonIbank.query.queryShowOutgoing( key.sender,  key.pending, {...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
 				commit('QUERY', { query: 'ShowOutgoing', key: { params: {...key}, query}, value })
 				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShowOutgoing', payload: { options: { all }, params: {...key},query }})
 				return getters['getShowOutgoing']( { params: {...key}, query}) ?? {}
@@ -250,19 +258,6 @@ export default {
 		},
 		
 		
-		async sendMsgReceive({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.MoonIbank.tx.sendMsgReceive({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgReceive:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgReceive:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgSend({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -276,20 +271,20 @@ export default {
 				}
 			}
 		},
-		
-		async MsgReceive({ rootGetters }, { value }) {
+		async sendMsgReceive({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
-				const client=initClient(rootGetters)
-				const msg = await client.MoonIbank.tx.msgReceive({value})
-				return msg
+				const client=await initClient(rootGetters)
+				const result = await client.MoonIbank.tx.sendMsgReceive({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgReceive:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgReceive:Create Could not create message: ' + e.message)
+				}else{
+					throw new Error('TxClient:MsgReceive:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		
 		async MsgSend({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -300,6 +295,19 @@ export default {
 					throw new Error('TxClient:MsgSend:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgSend:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgReceive({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.MoonIbank.tx.msgReceive({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgReceive:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgReceive:Create Could not create message: ' + e.message)
 				}
 			}
 		},
