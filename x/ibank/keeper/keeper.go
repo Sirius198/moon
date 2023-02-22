@@ -57,7 +57,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 func (k Keeper) CreateModuleAccount(ctx sdk.Context) {
 	macc := authtypes.NewEmptyModuleAccount(types.ModuleName, authtypes.Minter)
-	// maccI := (k.accountKeeper.NewAccount(ctx, macc)).(authtypes.ModuleAccountI)
 	k.accountKeeper.SetModuleAccount(ctx, macc)
 }
 
@@ -74,6 +73,7 @@ func (k Keeper) SendCoin(ctx sdk.Context, from, to sdk.AccAddress, amt sdk.Coin)
 		Coins:      sdk.Coins{amt},
 		SentAt:     ctx.BlockTime(),
 		ReceivedAt: ctx.BlockTime(),
+		Status:     types.TXN_PENDING,
 	})
 
 	return nil
@@ -103,6 +103,7 @@ func (k Keeper) ReceiveCoin(ctx sdk.Context, receiver sdk.AccAddress, transactio
 	}
 
 	txn.ReceivedAt = ctx.BlockTime()
+	txn.Status = types.TXN_SENT
 	k.SetTransaction(ctx, txn)
 
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiver, txn.Coins)

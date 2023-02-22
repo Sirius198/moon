@@ -81,17 +81,24 @@ export interface IbankTransaction {
   /** @format uint64 */
   id?: string;
   sender?: string;
-  receiver?: string;
-  coins?: V1Beta1Coin[];
 
   /** @format date-time */
   sent_at?: string;
+  receiver?: string;
 
   /**
    * If sent_at is equal to received_at, transaction have not been performed
    * @format date-time
    */
   received_at?: string;
+  coins?: V1Beta1Coin[];
+  status?: IbankTxnStatus;
+}
+
+export enum IbankTxnStatus {
+  TXN_PENDING = "TXN_PENDING",
+  TXN_SENT = "TXN_SENT",
+  TXN_EXPIRED = "TXN_EXPIRED",
 }
 
 export interface ProtobufAny {

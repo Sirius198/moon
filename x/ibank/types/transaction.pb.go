@@ -28,14 +28,43 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type TxnStatus int32
+
+const (
+	TxnStatus_TXN_PENDING TxnStatus = 0
+	TxnStatus_TXN_SENT    TxnStatus = 1
+	TxnStatus_TXN_EXPIRED TxnStatus = 2
+)
+
+var TxnStatus_name = map[int32]string{
+	0: "TXN_PENDING",
+	1: "TXN_SENT",
+	2: "TXN_EXPIRED",
+}
+
+var TxnStatus_value = map[string]int32{
+	"TXN_PENDING": 0,
+	"TXN_SENT":    1,
+	"TXN_EXPIRED": 2,
+}
+
+func (x TxnStatus) String() string {
+	return proto.EnumName(TxnStatus_name, int32(x))
+}
+
+func (TxnStatus) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_d43bfa2a2dd3ead2, []int{0}
+}
+
 type Transaction struct {
-	Id       uint64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Sender   string       `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
-	Receiver string       `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	Coins    []types.Coin `protobuf:"bytes,4,rep,name=coins,proto3" json:"coins"`
-	SentAt   time.Time    `protobuf:"bytes,5,opt,name=sent_at,json=sentAt,proto3,stdtime" json:"sent_at"`
+	Id       uint64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Sender   string    `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
+	SentAt   time.Time `protobuf:"bytes,3,opt,name=sent_at,json=sentAt,proto3,stdtime" json:"sent_at"`
+	Receiver string    `protobuf:"bytes,4,opt,name=receiver,proto3" json:"receiver,omitempty"`
 	// If sent_at is equal to received_at, transaction have not been performed
-	ReceivedAt time.Time `protobuf:"bytes,6,opt,name=received_at,json=receivedAt,proto3,stdtime" json:"received_at"`
+	ReceivedAt time.Time    `protobuf:"bytes,5,opt,name=received_at,json=receivedAt,proto3,stdtime" json:"received_at"`
+	Coins      []types.Coin `protobuf:"bytes,6,rep,name=coins,proto3" json:"coins"`
+	Status     TxnStatus    `protobuf:"varint,7,opt,name=status,proto3,enum=moon.ibank.TxnStatus" json:"status,omitempty"`
 }
 
 func (m *Transaction) Reset()         { *m = Transaction{} }
@@ -85,25 +114,18 @@ func (m *Transaction) GetSender() string {
 	return ""
 }
 
-func (m *Transaction) GetReceiver() string {
-	if m != nil {
-		return m.Receiver
-	}
-	return ""
-}
-
-func (m *Transaction) GetCoins() []types.Coin {
-	if m != nil {
-		return m.Coins
-	}
-	return nil
-}
-
 func (m *Transaction) GetSentAt() time.Time {
 	if m != nil {
 		return m.SentAt
 	}
 	return time.Time{}
+}
+
+func (m *Transaction) GetReceiver() string {
+	if m != nil {
+		return m.Receiver
+	}
+	return ""
 }
 
 func (m *Transaction) GetReceivedAt() time.Time {
@@ -113,34 +135,54 @@ func (m *Transaction) GetReceivedAt() time.Time {
 	return time.Time{}
 }
 
+func (m *Transaction) GetCoins() []types.Coin {
+	if m != nil {
+		return m.Coins
+	}
+	return nil
+}
+
+func (m *Transaction) GetStatus() TxnStatus {
+	if m != nil {
+		return m.Status
+	}
+	return TxnStatus_TXN_PENDING
+}
+
 func init() {
+	proto.RegisterEnum("moon.ibank.TxnStatus", TxnStatus_name, TxnStatus_value)
 	proto.RegisterType((*Transaction)(nil), "moon.ibank.Transaction")
 }
 
 func init() { proto.RegisterFile("moon/ibank/transaction.proto", fileDescriptor_d43bfa2a2dd3ead2) }
 
 var fileDescriptor_d43bfa2a2dd3ead2 = []byte{
-	// 319 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0xbf, 0x4e, 0xf3, 0x30,
-	0x14, 0xc5, 0xe3, 0xf4, 0xcf, 0xd7, 0xcf, 0x91, 0x18, 0x2c, 0x84, 0x42, 0x84, 0xdc, 0x88, 0x29,
-	0x03, 0xb2, 0xd5, 0x22, 0x46, 0x86, 0x16, 0xf1, 0x02, 0x55, 0x27, 0x16, 0xe4, 0x24, 0x26, 0xb2,
-	0x20, 0xbe, 0x55, 0x6c, 0x2a, 0x78, 0x09, 0xd4, 0xc7, 0xea, 0xd8, 0x91, 0x09, 0x50, 0xfb, 0x22,
-	0x28, 0x4e, 0x02, 0x33, 0x9b, 0x8f, 0xcf, 0xb9, 0xe7, 0xfe, 0xa4, 0x8b, 0xcf, 0x4a, 0x00, 0xcd,
-	0x55, 0x2a, 0xf4, 0x23, 0xb7, 0x95, 0xd0, 0x46, 0x64, 0x56, 0x81, 0x66, 0xab, 0x0a, 0x2c, 0x10,
-	0x5c, 0xbb, 0xcc, 0xb9, 0xd1, 0x71, 0x01, 0x05, 0xb8, 0x6f, 0x5e, 0xbf, 0x9a, 0x44, 0x44, 0x33,
-	0x30, 0x25, 0x18, 0x9e, 0x0a, 0x23, 0xf9, 0x7a, 0x92, 0x4a, 0x2b, 0x26, 0x3c, 0x03, 0xd5, 0x36,
-	0x44, 0xe3, 0x02, 0xa0, 0x78, 0x92, 0xdc, 0xa9, 0xf4, 0xf9, 0x81, 0x5b, 0x55, 0x4a, 0x63, 0x45,
-	0xb9, 0x6a, 0x02, 0xe7, 0x6f, 0x3e, 0x0e, 0x96, 0xbf, 0x8b, 0xc9, 0x11, 0xf6, 0x55, 0x1e, 0xa2,
-	0x18, 0x25, 0xfd, 0x85, 0xaf, 0x72, 0x72, 0x82, 0x87, 0x46, 0xea, 0x5c, 0x56, 0xa1, 0x1f, 0xa3,
-	0xe4, 0xff, 0xa2, 0x55, 0x24, 0xc2, 0xa3, 0x4a, 0x66, 0x52, 0xad, 0x65, 0x15, 0xf6, 0x9c, 0xf3,
-	0xa3, 0xc9, 0x15, 0x1e, 0xd4, 0x08, 0x26, 0xec, 0xc7, 0xbd, 0x24, 0x98, 0x9e, 0xb2, 0x06, 0x92,
-	0xd5, 0x90, 0xac, 0x85, 0x64, 0x37, 0xa0, 0xf4, 0xbc, 0xbf, 0xfd, 0x18, 0x7b, 0x8b, 0x26, 0x4d,
-	0xae, 0xf1, 0x3f, 0x23, 0xb5, 0xbd, 0x17, 0x36, 0x1c, 0xc4, 0x28, 0x09, 0xa6, 0x11, 0x6b, 0xe8,
-	0x59, 0x47, 0xcf, 0x96, 0x1d, 0xfd, 0x7c, 0x54, 0x4f, 0x6e, 0x3e, 0xc7, 0xc8, 0x11, 0xd9, 0x99,
-	0x25, 0xb7, 0x38, 0x68, 0x09, 0xf2, 0xba, 0x62, 0xf8, 0x87, 0x0a, 0xdc, 0x0d, 0xce, 0xec, 0xfc,
-	0x62, 0xbb, 0xa7, 0x68, 0xb7, 0xa7, 0xe8, 0x6b, 0x4f, 0xd1, 0xe6, 0x40, 0xbd, 0xdd, 0x81, 0x7a,
-	0xef, 0x07, 0xea, 0xdd, 0x11, 0x77, 0xab, 0x97, 0xee, 0x5a, 0xaf, 0x2b, 0x69, 0xd2, 0xa1, 0xeb,
-	0xbd, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xd3, 0x9d, 0xcf, 0x2f, 0xc8, 0x01, 0x00, 0x00,
+	// 396 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0x41, 0x6f, 0xd3, 0x30,
+	0x14, 0x8e, 0xb3, 0x2e, 0xeb, 0x1c, 0x34, 0x2a, 0x0b, 0x50, 0x88, 0x50, 0x1a, 0x71, 0x8a, 0x10,
+	0xd8, 0x5a, 0x11, 0x27, 0xc4, 0x61, 0x65, 0x11, 0xda, 0x25, 0x9a, 0xb2, 0x1c, 0x26, 0x2e, 0x93,
+	0x93, 0x98, 0xc8, 0x82, 0xd8, 0x55, 0xec, 0x4d, 0xe5, 0x5f, 0xf4, 0x0f, 0x71, 0xef, 0xb1, 0x47,
+	0x4e, 0x80, 0xda, 0x3f, 0x82, 0xe2, 0x24, 0xed, 0x79, 0xb7, 0xf7, 0xde, 0xf7, 0xbd, 0xef, 0x93,
+	0x3f, 0x3f, 0xf8, 0xaa, 0x96, 0x52, 0x10, 0x9e, 0x53, 0xf1, 0x9d, 0xe8, 0x86, 0x0a, 0x45, 0x0b,
+	0xcd, 0xa5, 0xc0, 0x8b, 0x46, 0x6a, 0x89, 0x60, 0x8b, 0x62, 0x83, 0xfa, 0xcf, 0x2a, 0x59, 0x49,
+	0x33, 0x26, 0x6d, 0xd5, 0x31, 0xfc, 0xa0, 0x90, 0xaa, 0x96, 0x8a, 0xe4, 0x54, 0x31, 0xf2, 0x70,
+	0x9e, 0x33, 0x4d, 0xcf, 0x49, 0x21, 0x79, 0xaf, 0xe0, 0x4f, 0x2b, 0x29, 0xab, 0x1f, 0x8c, 0x98,
+	0x2e, 0xbf, 0xff, 0x46, 0x34, 0xaf, 0x99, 0xd2, 0xb4, 0x5e, 0x74, 0x84, 0xd7, 0xbf, 0x6c, 0xe8,
+	0x66, 0x07, 0x63, 0x74, 0x06, 0x6d, 0x5e, 0x7a, 0x20, 0x04, 0xd1, 0x28, 0xb5, 0x79, 0x89, 0x5e,
+	0x40, 0x47, 0x31, 0x51, 0xb2, 0xc6, 0xb3, 0x43, 0x10, 0x9d, 0xa6, 0x7d, 0x87, 0x3e, 0xc1, 0x13,
+	0xc5, 0x84, 0xbe, 0xa3, 0xda, 0x3b, 0x0a, 0x41, 0xe4, 0xce, 0x7c, 0xdc, 0x59, 0xe1, 0xc1, 0x0a,
+	0x67, 0x83, 0xd5, 0x7c, 0xbc, 0xfe, 0x33, 0xb5, 0x56, 0x7f, 0xa7, 0xc0, 0xac, 0xeb, 0x0b, 0x8d,
+	0x7c, 0x38, 0x6e, 0x58, 0xc1, 0xf8, 0x03, 0x6b, 0xbc, 0x91, 0x11, 0xde, 0xf7, 0x28, 0x86, 0x6e,
+	0x5f, 0x97, 0xad, 0xfc, 0xf1, 0x23, 0xe4, 0xe1, 0xb0, 0x78, 0xa1, 0xd1, 0x07, 0x78, 0xdc, 0x06,
+	0xa1, 0x3c, 0x27, 0x3c, 0x8a, 0xdc, 0xd9, 0x4b, 0xdc, 0x45, 0x85, 0xdb, 0xa8, 0x70, 0x1f, 0x15,
+	0xfe, 0x2c, 0xb9, 0x98, 0x8f, 0xda, 0xfd, 0xb4, 0x63, 0xa3, 0x77, 0xd0, 0x51, 0x9a, 0xea, 0x7b,
+	0xe5, 0x9d, 0x84, 0x20, 0x3a, 0x9b, 0x3d, 0xc7, 0x87, 0x4f, 0xc0, 0xd9, 0x52, 0xdc, 0x18, 0x30,
+	0xed, 0x49, 0x6f, 0x3e, 0xc2, 0xd3, 0xfd, 0x10, 0x3d, 0x85, 0x6e, 0x76, 0x9b, 0xdc, 0x5d, 0xc7,
+	0xc9, 0xe5, 0x55, 0xf2, 0x65, 0x62, 0xa1, 0x27, 0x70, 0xdc, 0x0e, 0x6e, 0xe2, 0x24, 0x9b, 0x80,
+	0x01, 0x8e, 0x6f, 0xaf, 0xaf, 0xd2, 0xf8, 0x72, 0x62, 0xcf, 0xdf, 0xae, 0xb7, 0x01, 0xd8, 0x6c,
+	0x03, 0xf0, 0x6f, 0x1b, 0x80, 0xd5, 0x2e, 0xb0, 0x36, 0xbb, 0xc0, 0xfa, 0xbd, 0x0b, 0xac, 0xaf,
+	0xc8, 0xdc, 0xc5, 0x72, 0xb8, 0x8c, 0x9f, 0x0b, 0xa6, 0x72, 0xc7, 0x3c, 0xfd, 0xfd, 0xff, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x17, 0x87, 0x40, 0x4c, 0x34, 0x02, 0x00, 0x00,
 }
 
 func (m *Transaction) Marshal() (dAtA []byte, err error) {
@@ -163,22 +205,11 @@ func (m *Transaction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ReceivedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt):])
-	if err1 != nil {
-		return 0, err1
+	if m.Status != 0 {
+		i = encodeVarintTransaction(dAtA, i, uint64(m.Status))
+		i--
+		dAtA[i] = 0x38
 	}
-	i -= n1
-	i = encodeVarintTransaction(dAtA, i, uint64(n1))
-	i--
-	dAtA[i] = 0x32
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.SentAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.SentAt):])
-	if err2 != nil {
-		return 0, err2
-	}
-	i -= n2
-	i = encodeVarintTransaction(dAtA, i, uint64(n2))
-	i--
-	dAtA[i] = 0x2a
 	if len(m.Coins) > 0 {
 		for iNdEx := len(m.Coins) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -190,16 +221,32 @@ func (m *Transaction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintTransaction(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x32
 		}
 	}
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ReceivedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintTransaction(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x2a
 	if len(m.Receiver) > 0 {
 		i -= len(m.Receiver)
 		copy(dAtA[i:], m.Receiver)
 		i = encodeVarintTransaction(dAtA, i, uint64(len(m.Receiver)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
 	}
+	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.SentAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.SentAt):])
+	if err2 != nil {
+		return 0, err2
+	}
+	i -= n2
+	i = encodeVarintTransaction(dAtA, i, uint64(n2))
+	i--
+	dAtA[i] = 0x1a
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -239,20 +286,23 @@ func (m *Transaction) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTransaction(uint64(l))
 	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.SentAt)
+	n += 1 + l + sovTransaction(uint64(l))
 	l = len(m.Receiver)
 	if l > 0 {
 		n += 1 + l + sovTransaction(uint64(l))
 	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt)
+	n += 1 + l + sovTransaction(uint64(l))
 	if len(m.Coins) > 0 {
 		for _, e := range m.Coins {
 			l = e.Size()
 			n += 1 + l + sovTransaction(uint64(l))
 		}
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.SentAt)
-	n += 1 + l + sovTransaction(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ReceivedAt)
-	n += 1 + l + sovTransaction(uint64(l))
+	if m.Status != 0 {
+		n += 1 + sovTransaction(uint64(m.Status))
+	}
 	return n
 }
 
@@ -344,6 +394,39 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SentAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransaction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTransaction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransaction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.SentAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
 			}
 			var stringLen uint64
@@ -374,7 +457,40 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 			}
 			m.Receiver = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReceivedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTransaction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTransaction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTransaction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ReceivedAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Coins", wireType)
 			}
@@ -408,11 +524,11 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SentAt", wireType)
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
-			var msglen int
+			m.Status = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTransaction
@@ -422,58 +538,11 @@ func (m *Transaction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				m.Status |= TxnStatus(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
-				return ErrInvalidLengthTransaction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTransaction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.SentAt, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReceivedAt", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTransaction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTransaction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTransaction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ReceivedAt, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTransaction(dAtA[iNdEx:])

@@ -6,20 +6,58 @@ import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "moon.ibank";
 
+export enum TxnStatus {
+  TXN_PENDING = 0,
+  TXN_SENT = 1,
+  TXN_EXPIRED = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function txnStatusFromJSON(object: any): TxnStatus {
+  switch (object) {
+    case 0:
+    case "TXN_PENDING":
+      return TxnStatus.TXN_PENDING;
+    case 1:
+    case "TXN_SENT":
+      return TxnStatus.TXN_SENT;
+    case 2:
+    case "TXN_EXPIRED":
+      return TxnStatus.TXN_EXPIRED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return TxnStatus.UNRECOGNIZED;
+  }
+}
+
+export function txnStatusToJSON(object: TxnStatus): string {
+  switch (object) {
+    case TxnStatus.TXN_PENDING:
+      return "TXN_PENDING";
+    case TxnStatus.TXN_SENT:
+      return "TXN_SENT";
+    case TxnStatus.TXN_EXPIRED:
+      return "TXN_EXPIRED";
+    case TxnStatus.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface Transaction {
   id: number;
   sender: string;
+  sentAt: Date | undefined;
   receiver: string;
-  coins: Coin[];
-  sentAt:
-    | Date
-    | undefined;
   /** If sent_at is equal to received_at, transaction have not been performed */
   receivedAt: Date | undefined;
+  coins: Coin[];
+  status: TxnStatus;
 }
 
 function createBaseTransaction(): Transaction {
-  return { id: 0, sender: "", receiver: "", coins: [], sentAt: undefined, receivedAt: undefined };
+  return { id: 0, sender: "", sentAt: undefined, receiver: "", receivedAt: undefined, coins: [], status: 0 };
 }
 
 export const Transaction = {
@@ -30,17 +68,20 @@ export const Transaction = {
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
     }
-    if (message.receiver !== "") {
-      writer.uint32(26).string(message.receiver);
-    }
-    for (const v of message.coins) {
-      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
-    }
     if (message.sentAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.sentAt), writer.uint32(42).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.sentAt), writer.uint32(26).fork()).ldelim();
+    }
+    if (message.receiver !== "") {
+      writer.uint32(34).string(message.receiver);
     }
     if (message.receivedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.receivedAt), writer.uint32(50).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.receivedAt), writer.uint32(42).fork()).ldelim();
+    }
+    for (const v of message.coins) {
+      Coin.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.status !== 0) {
+      writer.uint32(56).int32(message.status);
     }
     return writer;
   },
@@ -59,16 +100,19 @@ export const Transaction = {
           message.sender = reader.string();
           break;
         case 3:
-          message.receiver = reader.string();
-          break;
-        case 4:
-          message.coins.push(Coin.decode(reader, reader.uint32()));
-          break;
-        case 5:
           message.sentAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
-        case 6:
+        case 4:
+          message.receiver = reader.string();
+          break;
+        case 5:
           message.receivedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
+        case 6:
+          message.coins.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 7:
+          message.status = reader.int32() as any;
           break;
         default:
           reader.skipType(tag & 7);
@@ -82,10 +126,11 @@ export const Transaction = {
     return {
       id: isSet(object.id) ? Number(object.id) : 0,
       sender: isSet(object.sender) ? String(object.sender) : "",
-      receiver: isSet(object.receiver) ? String(object.receiver) : "",
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromJSON(e)) : [],
       sentAt: isSet(object.sentAt) ? fromJsonTimestamp(object.sentAt) : undefined,
+      receiver: isSet(object.receiver) ? String(object.receiver) : "",
       receivedAt: isSet(object.receivedAt) ? fromJsonTimestamp(object.receivedAt) : undefined,
+      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromJSON(e)) : [],
+      status: isSet(object.status) ? txnStatusFromJSON(object.status) : 0,
     };
   },
 
@@ -93,14 +138,15 @@ export const Transaction = {
     const obj: any = {};
     message.id !== undefined && (obj.id = Math.round(message.id));
     message.sender !== undefined && (obj.sender = message.sender);
+    message.sentAt !== undefined && (obj.sentAt = message.sentAt.toISOString());
     message.receiver !== undefined && (obj.receiver = message.receiver);
+    message.receivedAt !== undefined && (obj.receivedAt = message.receivedAt.toISOString());
     if (message.coins) {
       obj.coins = message.coins.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
       obj.coins = [];
     }
-    message.sentAt !== undefined && (obj.sentAt = message.sentAt.toISOString());
-    message.receivedAt !== undefined && (obj.receivedAt = message.receivedAt.toISOString());
+    message.status !== undefined && (obj.status = txnStatusToJSON(message.status));
     return obj;
   },
 
@@ -108,10 +154,11 @@ export const Transaction = {
     const message = createBaseTransaction();
     message.id = object.id ?? 0;
     message.sender = object.sender ?? "";
-    message.receiver = object.receiver ?? "";
-    message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
     message.sentAt = object.sentAt ?? undefined;
+    message.receiver = object.receiver ?? "";
     message.receivedAt = object.receivedAt ?? undefined;
+    message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
+    message.status = object.status ?? 0;
     return message;
   },
 };

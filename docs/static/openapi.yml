@@ -44721,40 +44721,6 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /moon/ibank/ping_go/{pending}:
-    get:
-      summary: Queries a list of PingGo items.
-      operationId: MoonIbankPingGo
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pending
-          in: path
-          required: true
-          type: boolean
-      tags:
-        - Query
   /moon/ibank/show_incoming/{receiver}/{pending}:
     get:
       summary: Queries a list of ShowIncoming items.
@@ -44775,8 +44741,17 @@ paths:
                       format: uint64
                     sender:
                       type: string
+                    sent_at:
+                      type: string
+                      format: date-time
                     receiver:
                       type: string
+                    received_at:
+                      type: string
+                      format: date-time
+                      title: >-
+                        If sent_at is equal to received_at, transaction have not
+                        been performed
                     coins:
                       type: array
                       items:
@@ -44795,15 +44770,13 @@ paths:
                           custom method
 
                           signatures required by gogoproto.
-                    sent_at:
+                    status:
                       type: string
-                      format: date-time
-                    received_at:
-                      type: string
-                      format: date-time
-                      title: >-
-                        If sent_at is equal to received_at, transaction have not
-                        been performed
+                      enum:
+                        - TXN_PENDING
+                        - TXN_SENT
+                        - TXN_EXPIRED
+                      default: TXN_PENDING
               pagination:
                 type: object
                 properties:
@@ -44937,8 +44910,17 @@ paths:
                       format: uint64
                     sender:
                       type: string
+                    sent_at:
+                      type: string
+                      format: date-time
                     receiver:
                       type: string
+                    received_at:
+                      type: string
+                      format: date-time
+                      title: >-
+                        If sent_at is equal to received_at, transaction have not
+                        been performed
                     coins:
                       type: array
                       items:
@@ -44957,15 +44939,13 @@ paths:
                           custom method
 
                           signatures required by gogoproto.
-                    sent_at:
+                    status:
                       type: string
-                      format: date-time
-                    received_at:
-                      type: string
-                      format: date-time
-                      title: >-
-                        If sent_at is equal to received_at, transaction have not
-                        been performed
+                      enum:
+                        - TXN_PENDING
+                        - TXN_SENT
+                        - TXN_EXPIRED
+                      default: TXN_PENDING
               pagination:
                 type: object
                 properties:
@@ -45099,8 +45079,17 @@ paths:
                       format: uint64
                     sender:
                       type: string
+                    sent_at:
+                      type: string
+                      format: date-time
                     receiver:
                       type: string
+                    received_at:
+                      type: string
+                      format: date-time
+                      title: >-
+                        If sent_at is equal to received_at, transaction have not
+                        been performed
                     coins:
                       type: array
                       items:
@@ -45119,15 +45108,13 @@ paths:
                           custom method
 
                           signatures required by gogoproto.
-                    sent_at:
+                    status:
                       type: string
-                      format: date-time
-                    received_at:
-                      type: string
-                      format: date-time
-                      title: >-
-                        If sent_at is equal to received_at, transaction have not
-                        been performed
+                      enum:
+                        - TXN_PENDING
+                        - TXN_SENT
+                        - TXN_EXPIRED
+                      default: TXN_PENDING
               pagination:
                 type: object
                 properties:
@@ -45251,8 +45238,17 @@ paths:
                     format: uint64
                   sender:
                     type: string
+                  sent_at:
+                    type: string
+                    format: date-time
                   receiver:
                     type: string
+                  received_at:
+                    type: string
+                    format: date-time
+                    title: >-
+                      If sent_at is equal to received_at, transaction have not
+                      been performed
                   coins:
                     type: array
                     items:
@@ -45270,15 +45266,13 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
-                  sent_at:
+                  status:
                     type: string
-                    format: date-time
-                  received_at:
-                    type: string
-                    format: date-time
-                    title: >-
-                      If sent_at is equal to received_at, transaction have not
-                      been performed
+                    enum:
+                      - TXN_PENDING
+                      - TXN_SENT
+                      - TXN_EXPIRED
+                    default: TXN_PENDING
         default:
           description: An unexpected error response.
           schema:
@@ -74917,8 +74911,17 @@ definitions:
               format: uint64
             sender:
               type: string
+            sent_at:
+              type: string
+              format: date-time
             receiver:
               type: string
+            received_at:
+              type: string
+              format: date-time
+              title: >-
+                If sent_at is equal to received_at, transaction have not been
+                performed
             coins:
               type: array
               items:
@@ -74936,15 +74939,13 @@ definitions:
                   method
 
                   signatures required by gogoproto.
-            sent_at:
+            status:
               type: string
-              format: date-time
-            received_at:
-              type: string
-              format: date-time
-              title: >-
-                If sent_at is equal to received_at, transaction have not been
-                performed
+              enum:
+                - TXN_PENDING
+                - TXN_SENT
+                - TXN_EXPIRED
+              default: TXN_PENDING
       pagination:
         type: object
         properties:
@@ -74982,8 +74983,17 @@ definitions:
             format: uint64
           sender:
             type: string
+          sent_at:
+            type: string
+            format: date-time
           receiver:
             type: string
+          received_at:
+            type: string
+            format: date-time
+            title: >-
+              If sent_at is equal to received_at, transaction have not been
+              performed
           coins:
             type: array
             items:
@@ -75001,15 +75011,13 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-          sent_at:
+          status:
             type: string
-            format: date-time
-          received_at:
-            type: string
-            format: date-time
-            title: >-
-              If sent_at is equal to received_at, transaction have not been
-              performed
+            enum:
+              - TXN_PENDING
+              - TXN_SENT
+              - TXN_EXPIRED
+            default: TXN_PENDING
   moon.ibank.QueryParamsResponse:
     type: object
     properties:
@@ -75020,8 +75028,6 @@ definitions:
           duration_of_expiration:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  moon.ibank.QueryPingGoResponse:
-    type: object
   moon.ibank.QueryShowIncomingResponse:
     type: object
     properties:
@@ -75035,8 +75041,17 @@ definitions:
               format: uint64
             sender:
               type: string
+            sent_at:
+              type: string
+              format: date-time
             receiver:
               type: string
+            received_at:
+              type: string
+              format: date-time
+              title: >-
+                If sent_at is equal to received_at, transaction have not been
+                performed
             coins:
               type: array
               items:
@@ -75054,15 +75069,13 @@ definitions:
                   method
 
                   signatures required by gogoproto.
-            sent_at:
+            status:
               type: string
-              format: date-time
-            received_at:
-              type: string
-              format: date-time
-              title: >-
-                If sent_at is equal to received_at, transaction have not been
-                performed
+              enum:
+                - TXN_PENDING
+                - TXN_SENT
+                - TXN_EXPIRED
+              default: TXN_PENDING
       pagination:
         type: object
         properties:
@@ -75102,8 +75115,17 @@ definitions:
               format: uint64
             sender:
               type: string
+            sent_at:
+              type: string
+              format: date-time
             receiver:
               type: string
+            received_at:
+              type: string
+              format: date-time
+              title: >-
+                If sent_at is equal to received_at, transaction have not been
+                performed
             coins:
               type: array
               items:
@@ -75121,15 +75143,13 @@ definitions:
                   method
 
                   signatures required by gogoproto.
-            sent_at:
+            status:
               type: string
-              format: date-time
-            received_at:
-              type: string
-              format: date-time
-              title: >-
-                If sent_at is equal to received_at, transaction have not been
-                performed
+              enum:
+                - TXN_PENDING
+                - TXN_SENT
+                - TXN_EXPIRED
+              default: TXN_PENDING
       pagination:
         type: object
         properties:
@@ -75164,8 +75184,17 @@ definitions:
         format: uint64
       sender:
         type: string
+      sent_at:
+        type: string
+        format: date-time
       receiver:
         type: string
+      received_at:
+        type: string
+        format: date-time
+        title: >-
+          If sent_at is equal to received_at, transaction have not been
+          performed
       coins:
         type: array
         items:
@@ -75180,15 +75209,20 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-      sent_at:
+      status:
         type: string
-        format: date-time
-      received_at:
-        type: string
-        format: date-time
-        title: >-
-          If sent_at is equal to received_at, transaction have not been
-          performed
+        enum:
+          - TXN_PENDING
+          - TXN_SENT
+          - TXN_EXPIRED
+        default: TXN_PENDING
+  moon.ibank.TxnStatus:
+    type: string
+    enum:
+      - TXN_PENDING
+      - TXN_SENT
+      - TXN_EXPIRED
+    default: TXN_PENDING
   moon.moon.Params:
     type: object
     description: Params defines the parameters for the module.
